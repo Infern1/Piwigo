@@ -73,13 +73,6 @@ class Smarty_Template_Cached extends Smarty_Template_Resource_Base
     public $hashes = array();
 
     /**
-     * Flag if this is a cache resource
-     *
-     * @var bool
-     */
-    public $isCache = true;
-
-    /**
      * create Cached Object container
      *
      * @param Smarty_Internal_Template $_template template object
@@ -106,7 +99,7 @@ class Smarty_Template_Cached extends Smarty_Template_Resource_Base
         $_template->cached->handler->populate($_template->cached, $_template);
         // caching enabled ?
         if (!($_template->caching == Smarty::CACHING_LIFETIME_CURRENT ||
-              $_template->caching == Smarty::CACHING_LIFETIME_SAVED) || $_template->source->handler->recompiled
+                $_template->caching == Smarty::CACHING_LIFETIME_SAVED) || $_template->source->handler->recompiled
         ) {
             $_template->cached->valid = false;
         }
@@ -125,9 +118,6 @@ class Smarty_Template_Cached extends Smarty_Template_Resource_Base
     {
         if ($this->isCached($_template)) {
             if ($_template->smarty->debugging) {
-                if (!isset($_template->smarty->_debug)) {
-                    $_template->smarty->_debug = new Smarty_Internal_Debug();
-                }
                 $_template->smarty->_debug->start_cache($_template);
             }
             if (!$this->processed) {
@@ -244,7 +234,7 @@ class Smarty_Template_Cached extends Smarty_Template_Resource_Base
      *
      * @param Smarty_Internal_Template $_template template object
      *
-     * @return string|false content
+     * @return string content
      */
     public function read(Smarty_Internal_Template $_template)
     {

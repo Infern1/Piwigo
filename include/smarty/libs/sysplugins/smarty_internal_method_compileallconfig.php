@@ -17,16 +17,15 @@ class Smarty_Internal_Method_CompileAllConfig extends Smarty_Internal_Method_Com
      *
      * @api  Smarty::compileAllConfig()
      *
-     * @param \Smarty $smarty        passed smarty object
+     * @param \Smarty $smarty
      * @param  string $extension     file extension
      * @param  bool   $force_compile force all to recompile
      * @param  int    $time_limit
      * @param  int    $max_errors
      *
-     * @return int number of template files recompiled
+     * @return integer number of template files recompiled
      */
-    public function compileAllConfig(Smarty $smarty, $extension = '.conf', $force_compile = false, $time_limit = 0,
-                                     $max_errors = null)
+    public function compileAllConfig(Smarty $smarty, $extension = '.conf', $force_compile = false, $time_limit = 0, $max_errors = null)
     {
         return $this->compileAll($smarty, $extension, $force_compile, $time_limit, $max_errors, true);
     }

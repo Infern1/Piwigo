@@ -29,7 +29,7 @@ class Smarty_Internal_Method_GetDefaultModifiers
      */
     public function getDefaultModifiers(Smarty_Internal_TemplateBase $obj)
     {
-        $smarty = $obj->_getSmartyObj();
+        $smarty = isset($obj->smarty) ? $obj->smarty : $obj;
         return $smarty->default_modifiers;
     }
 }

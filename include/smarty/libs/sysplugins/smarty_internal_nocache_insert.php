@@ -37,17 +37,15 @@ class Smarty_Internal_Nocache_Insert
         }
         // call insert
         if (isset($_assign)) {
-            $_output .= "\$_smarty_tpl->assign('{$_assign}' , {$_function} (" . var_export($_attr, true) .
-                        ",\$_smarty_tpl), true);?>";
+            $_output .= "\$_smarty_tpl->assign('{$_assign}' , {$_function} (" . var_export($_attr, true) . ",\$_smarty_tpl), true);?>";
         } else {
             $_output .= "echo {$_function}(" . var_export($_attr, true) . ",\$_smarty_tpl);?>";
         }
         $_tpl = $_template;
-        while ($_tpl->_isSubTpl()) {
+        while (isset($_tpl->parent) && $_tpl->parent->_objType == 2) {
             $_tpl = $_tpl->parent;
         }
 
-        return "/*%%SmartyNocache:{$_tpl->compiled->nocache_hash}%%*/" . $_output .
-               "/*/%%SmartyNocache:{$_tpl->compiled->nocache_hash}%%*/";
+        return "/*%%SmartyNocache:{$_tpl->compiled->nocache_hash}%%*/" . $_output . "/*/%%SmartyNocache:{$_tpl->compiled->nocache_hash}%%*/";
     }
 }

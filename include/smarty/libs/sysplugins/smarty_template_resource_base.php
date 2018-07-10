@@ -19,9 +19,9 @@ abstract class Smarty_Template_Resource_Base
     /**
      * Compiled Timestamp
      *
-     * @var integer|bool
+     * @var integer
      */
-    public $timestamp = false;
+    public $timestamp = null;
 
     /**
      * Compiled Existence
@@ -87,57 +87,54 @@ abstract class Smarty_Template_Resource_Base
     public $includes = array();
 
     /**
-     * Flag if this is a cache resource
-     *
-     * @var bool
-     */
-    public $isCache = false;
-
-    /**
      * Process resource
      *
      * @param Smarty_Internal_Template $_template template object
      */
     abstract public function process(Smarty_Internal_Template $_template);
 
-    /**
+     /**
      * get rendered template content by calling compiled or cached template code
      *
-     * @param \Smarty_Internal_Template $_template
-     * @param string                    $unifunc function with template code
+     * @param string $unifunc function with template code
      *
+     * @return string
      * @throws \Exception
      */
     public function getRenderedTemplateCode(Smarty_Internal_Template $_template, $unifunc = null)
     {
-        $smarty = &$_template->smarty;
-        $_template->isRenderingCache = $this->isCache;
+        $unifunc = isset($unifunc) ? $unifunc : $this->unifunc;
         $level = ob_get_level();
         try {
-            if (!isset($unifunc)) {
-                $unifunc = $this->unifunc;
-            }
-            if (empty($unifunc) || !function_exists($unifunc)) {
+            if (empty($unifunc) || !is_callable($unifunc)) {
                 throw new SmartyException("Invalid compiled template for '{$_template->template_resource}'");
             }
-            if ($_template->startRenderCallbacks) {
-                foreach ($_template->startRenderCallbacks as $callback) {
-                    call_user_func($callback, $_template);
-                }
+            if (isset($_template->smarty->security_policy)) {
+                $_template->smarty->security_policy->startTemplate($_template);
             }
+            //
+            // render compiled or saved template code
+            //
+            if (!isset($_template->_cache['capture_stack'])) {
+                $_template->_cache['capture_stack'] = array();
+            }
+            $_saved_capture_level = count($_template->_cache['capture_stack']);
             $unifunc($_template);
-            foreach ($_template->endRenderCallbacks as $callback) {
-                call_user_func($callback, $_template);
+            // any unclosed {capture} tags ?
+            if ($_saved_capture_level != count($_template->_cache['capture_stack'])) {
+                $_template->capture_error();
             }
-            $_template->isRenderingCache = false;
+            if (isset($_template->smarty->security_policy)) {
+                $_template->smarty->security_policy->exitTemplate();
+            }
+            return null;
         }
         catch (Exception $e) {
-            $_template->isRenderingCache = false;
             while (ob_get_level() > $level) {
                 ob_end_clean();
             }
-            if (isset($smarty->security_policy)) {
-                $smarty->security_policy->endTemplate();
+             if (isset($_template->smarty->security_policy)) {
+                $_template->smarty->security_policy->exitTemplate();
             }
             throw $e;
         }
@@ -150,8 +147,8 @@ abstract class Smarty_Template_Resource_Base
      */
     public function getTimeStamp()
     {
-        if ($this->exists && !$this->timestamp) {
-            $this->timestamp = filemtime($this->filepath);
+        if ($this->exists && !isset($this->timestamp)) {
+            $this->timestamp = @filemtime($this->filepath);
         }
         return $this->timestamp;
     }

@@ -34,7 +34,7 @@ class Smarty_Internal_Method_CreateData
     public function createData(Smarty_Internal_TemplateBase $obj, Smarty_Internal_Data $parent = null, $name = null)
     {
         /* @var Smarty $smarty */
-        $smarty = $obj->_getSmartyObj();
+        $smarty = isset($this->smarty) ? $this->smarty : $obj;
         $dataObj = new Smarty_Data($parent, $smarty, $name);
         if ($smarty->debugging) {
             Smarty_Internal_Debug::register_data($dataObj);

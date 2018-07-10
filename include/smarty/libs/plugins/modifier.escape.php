@@ -66,8 +66,7 @@ function smarty_modifier_escape($string, $esc_type = 'html', $char_set = null, $
                         // php <5.2.3 - prevent double encoding
                         $string = preg_replace('!&(#?\w+);!', '%%%SMARTY_START%%%\\1%%%SMARTY_END%%%', $string);
                         $string = htmlspecialchars($string, ENT_QUOTES, $char_set);
-                        $string =
-                            str_replace(array('%%%SMARTY_START%%%', '%%%SMARTY_END%%%'), array('&', ';'), $string);
+                        $string = str_replace(array('%%%SMARTY_START%%%', '%%%SMARTY_END%%%'), array('&', ';'), $string);
 
                         return $string;
                     }
@@ -108,7 +107,7 @@ function smarty_modifier_escape($string, $esc_type = 'html', $char_set = null, $
             $return = '';
             $_length = strlen($string);
             for ($x = 0; $x < $_length; $x ++) {
-                $return .= '%' . bin2hex($string[ $x ]);
+                $return .= '%' . bin2hex($string[$x]);
             }
 
             return $return;
@@ -116,9 +115,7 @@ function smarty_modifier_escape($string, $esc_type = 'html', $char_set = null, $
         case 'hexentity':
             $return = '';
             if (Smarty::$_MBSTRING) {
-                if (!is_callable('smarty_mb_to_unicode')) {
-                    require_once(SMARTY_PLUGINS_DIR . 'shared.mb_unicode.php');
-                }
+                require_once(SMARTY_PLUGINS_DIR . 'shared.mb_unicode.php');
                 $return = '';
                 foreach (smarty_mb_to_unicode($string, Smarty::$_CHARSET) as $unicode) {
                     $return .= '&#x' . strtoupper(dechex($unicode)) . ';';
@@ -129,7 +126,7 @@ function smarty_modifier_escape($string, $esc_type = 'html', $char_set = null, $
             // no MBString fallback
             $_length = strlen($string);
             for ($x = 0; $x < $_length; $x ++) {
-                $return .= '&#x' . bin2hex($string[ $x ]) . ';';
+                $return .= '&#x' . bin2hex($string[$x]) . ';';
             }
 
             return $return;
@@ -137,9 +134,7 @@ function smarty_modifier_escape($string, $esc_type = 'html', $char_set = null, $
         case 'decentity':
             $return = '';
             if (Smarty::$_MBSTRING) {
-                if (!is_callable('smarty_mb_to_unicode')) {
-                    require_once(SMARTY_PLUGINS_DIR . 'shared.mb_unicode.php');
-                }
+                require_once(SMARTY_PLUGINS_DIR . 'shared.mb_unicode.php');
                 $return = '';
                 foreach (smarty_mb_to_unicode($string, Smarty::$_CHARSET) as $unicode) {
                     $return .= '&#' . $unicode . ';';
@@ -150,21 +145,19 @@ function smarty_modifier_escape($string, $esc_type = 'html', $char_set = null, $
             // no MBString fallback
             $_length = strlen($string);
             for ($x = 0; $x < $_length; $x ++) {
-                $return .= '&#' . ord($string[ $x ]) . ';';
+                $return .= '&#' . ord($string[$x]) . ';';
             }
 
             return $return;
 
         case 'javascript':
             // escape quotes and backslashes, newlines, etc.
-            return strtr($string, array('\\' => '\\\\', "'" => "\\'", '"' => '\\"', "\r" => '\\r', "\n" => '\\n',
-                                        '</' => '<\/'));
+            return strtr($string, array('\\' => '\\\\', "'" => "\\'", '"' => '\\"', "\r" => '\\r', "\n" => '\\n', '</' => '<\/'));
 
         case 'mail':
             if (Smarty::$_MBSTRING) {
-                if (!is_callable('smarty_mb_str_replace')) {
-                    require_once(SMARTY_PLUGINS_DIR . 'shared.mb_str_replace.php');
-                }
+                require_once(SMARTY_PLUGINS_DIR . 'shared.mb_str_replace.php');
+
                 return smarty_mb_str_replace(array('@', '.'), array(' [AT] ', ' [DOT] '), $string);
             }
             // no MBString fallback
@@ -174,9 +167,7 @@ function smarty_modifier_escape($string, $esc_type = 'html', $char_set = null, $
             // escape non-standard chars, such as ms document quotes
             $return = '';
             if (Smarty::$_MBSTRING) {
-                if (!is_callable('smarty_mb_to_unicode')) {
-                    require_once(SMARTY_PLUGINS_DIR . 'shared.mb_unicode.php');
-                }
+                require_once(SMARTY_PLUGINS_DIR . 'shared.mb_unicode.php');
                 foreach (smarty_mb_to_unicode($string, Smarty::$_CHARSET) as $unicode) {
                     if ($unicode >= 126) {
                         $return .= '&#' . $unicode . ';';

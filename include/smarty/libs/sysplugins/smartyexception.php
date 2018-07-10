@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Smarty exception class
  *
